@@ -1,0 +1,105 @@
+---
+title: \normalsize Assessment 1 \hfill MATH70094 Programming for Data Science \hfill Autumn 2025
+    \rule{\linewidth}{0.5mm}
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Enter NAME and CID here
+
+# Question 2 (20 marks)
+
+You have heard that an experienced spy should not only be proficient in Python, but also in R. Your task in this question is to provide R statements and functions to encode and decode string messages, as well as to do a simple analysis of a message. Some helpful functions/techniques for this question are:
+
+- cat, length, nchar, paste, strsplit, toupper, intToUtf8
+- sapply, grep, gsup
+- which, factor
+
+It is easy to see how to use these functions with the R help by typing `?length` in the R console. There are usually several ways to answer each question, and sometimes you might not use all or even any of the suggested functions. 
+
+```{r}
+# Do not alter this
+
+msg1 <- "THE PASSWORD IS MY NAME" 
+msg2 <- "I AM A SPY WRITING A SPY MESSAGE"
+msg3 <- "XLMW*MW*XLI*HIVW*WLSYWI*UVG*MW*XLI*WWT*UIAG*OLKDL*XLI*XLMW*AU*AU*XLMW*MW*XLI*HIVW*WLSYWI*UVG*MW*XLI*WWT*UIAG*OLKDL*XLI*XLMW*AU*AU"
+
+# Do not alter this
+```
+
+## Code clarity (1 mark)
+
+There is a famous saying among software developers that code is read
+more often than it is written. Marks will be awarded (or not awarded)
+based on the clarity of the code and appropriate use of comments.
+
+## Part A (2 marks)
+
+Repeat the task in Question 1, Part A, but now using R.
+
+```{r}
+
+```
+
+## Part B (8 marks)
+
+Repeat the task in Question 1, Part B, but now using R.
+
+```{r}
+
+```
+
+
+## Part C (2 marks)
+
+You have intercepted a message string stored in `msg2`. In order to identify if this message is important your task is to write R statements to locate the first occurrence (index) of the keyword `"SPY"` in the message. Print this index preceded by an informative print statement. 
+
+For example, if the message string is `"I AM A SPY"`, then you should return
+
+  `The word index of the first occurrence of the keyword SPY is: 4.`
+
+```{r}
+
+```
+
+## Part D (4 marks)
+
+You have intercepted another encoded message string stored in `msg3`. Your task is to write R statements to analyse the message as follows:
+
+### Part D(i) (2 marks)
+
+Count how often each letter $A,B,..,Z$ appears in the message. Plot a bar chart of the letter frequencies.
+
+```{r}
+
+```
+
+### Part D(ii) (2 marks)
+
+Compute the length of each word in the message. Plot a histogram of the word lengths.
+
+```{r}
+
+```
+
+
+## Part E (3 marks)
+
+Write an R function to generate a spy name from a person's first and last names. The function should take as input a string with the person's first name and a string with the person's last name, and return a string with the spy name. The spy name is generated as follows:
+
+- Convert the first and last names to uppercase.
+- Keep the first two letters of the first name, followed by the last two letters of the last name and conclude by a random two-digit number.
+
+Print your spy name preceded by an informative print statement.
+
+```{r}
+
+```
