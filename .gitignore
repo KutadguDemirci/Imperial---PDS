@@ -2,3 +2,7 @@
 __pycache__/
 *.pyc
 .vscode/
+.Rdata
+.Rhistory
+.log
+.tex

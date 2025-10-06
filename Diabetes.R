@@ -99,3 +99,4 @@ print(paste('Accuracy',1-misclass))
 
 # Confusion matrix 
 table(fitted,test_numeric)
+

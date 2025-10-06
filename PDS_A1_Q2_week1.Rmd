@@ -2,8 +2,8 @@
 title: \normalsize Assessment 1 \hfill MATH70094 Programming for Data Science \hfill Autumn 2025
     \rule{\linewidth}{0.5mm}
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 editor_options:
   markdown:
     wrap: 72
@@ -13,7 +13,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Enter NAME and CID here
+## Enter Kutadgu Gokalp Demirci - 06071571
 
 # Question 2 (20 marks)
 
@@ -46,7 +46,13 @@ based on the clarity of the code and appropriate use of comments.
 Repeat the task in Question 1, Part A, but now using R.
 
 ```{r}
+allowed_caracters <-unlist(strsplit("QWERTYUIOPASDFGHJKLZXCVBNM ", split = ""))
+# print(allowed_caracters)
+msg_caracters <-unlist(strsplit(msg1, split = ""))
+# print(msg_caracters)
 
+is_valid <- all(msg_caracters %in% allowed_caracters)
+cat("The message contains only capital letters and whitespace:", is_valid, "\n")
 ```
 
 ## Part B (8 marks)
@@ -54,6 +60,38 @@ Repeat the task in Question 1, Part A, but now using R.
 Repeat the task in Question 1, Part B, but now using R.
 
 ```{r}
+encoding_message <- function(message) {
+  
+  # Step 1
+  step1 <- function(letter) {
+    if (letter == " ") return(" ")
+    new_letter <- intToUtf8((utf8ToInt(letter) - utf8ToInt("A") + 3) %% 26 + utf8ToInt("A"))
+    return(new_letter)
+  }
+  
+  # Apply step1 to each character
+  shifted <- sapply(message, step1)
+  
+  #Step 2
+  reversed <- rev(shifted)
+  
+  #Step 3
+  replaced <- gsub(" ", "*", reversed)
+  
+  #Step 4
+  for (i in 1:length(replaced)) {
+    if (i %% 2 == 1) {     #This is left as one instead of 0 to match the zero-index of python
+      replaced[i] = tolower(replaced[i])
+      }
+    }
+  # Combine back into string
+  
+  encoded <- paste0('"\\#\\#\\#', paste0(replaced, collapse = ""), '\\#\\#\\#"')
+  return(encoded)
+}
+
+cat(encoding_message(msg_caracters), "\n")
+
 
 ```
 
@@ -67,7 +105,10 @@ For example, if the message string is `"I AM A SPY"`, then you should return
   `The word index of the first occurrence of the keyword SPY is: 4.`
 
 ```{r}
-
+split_message <- unlist(strsplit(msg2, " "))
+#print(split_message)
+first_occurrence_index <- min(which(split_message=="SPY"))
+cat("The word index of the first occurrence of the keyword SPY is: ", first_occurrence_index, ".", sep = "")
 ```
 
 ## Part D (4 marks)
@@ -79,7 +120,12 @@ You have intercepted another encoded message string stored in `msg3`. Your task 
 Count how often each letter $A,B,..,Z$ appears in the message. Plot a bar chart of the letter frequencies.
 
 ```{r}
+caracters_in_message <- unlist(strsplit(msg3, split = ""))
+caracter_usage <- table(factor(caracters_in_message))
 
+barplot(caracter_usage, 
+        main = "Caracter Usage in msg3",
+        ylim = c(0, 30))
 ```
 
 ### Part D(ii) (2 marks)
@@ -87,7 +133,11 @@ Count how often each letter $A,B,..,Z$ appears in the message. Plot a bar chart 
 Compute the length of each word in the message. Plot a histogram of the word lengths.
 
 ```{r}
-
+separeted_words <- unlist(strsplit(msg3, split = "\\*"))
+word_lenghts <- nchar(separeted_words)
+hist(word_lenghts,
+     main = "Histogram of Word Lengths in msg3",
+     xlab = "Word Lenght")
 ```
 
 
@@ -101,5 +151,30 @@ Write an R function to generate a spy name from a person's first and last names.
 Print your spy name preceded by an informative print statement.
 
 ```{r}
+first_name <- "Kutadgu"
+last_name <- "Demirci"
 
+spy_name_generator <- function(first_name_v, last_name_v) {
+  
+  first_name_v <- toupper(first_name_v)
+  last_name_v <- toupper(last_name_v)
+  
+  
+  fn_part <- substr(first_name_v, 1, 2)
+  
+  
+  ln_length <- nchar(last_name_v)
+  ln_part <- substr(last_name_v, ln_length-1, ln_length)
+  
+  
+  random_digits <- paste0(sample(0:9, 2, replace = TRUE), collapse = "")
+  
+  # Combine all parts
+  spy_name <- paste0(fn_part, ln_part, random_digits)
+  
+  return(spy_name)
+}
+
+# Generate a spy name
+spy_name_generator(first_name, last_name)
 ```
