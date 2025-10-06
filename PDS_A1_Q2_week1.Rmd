@@ -13,7 +13,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Enter Kutadgu Gokalp Demirci - 06071571
+## Kutadgu Gokalp Demirci - 06071571
 
 # Question 2 (20 marks)
 

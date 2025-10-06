@@ -160,9 +160,65 @@ based on the clarity of the code and appropriate use of comments.
 
 Repeat the task in Question 1, Part A, but now using R.
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{allowed\_caracters }\OtherTok{\textless{}{-}}\FunctionTok{unlist}\NormalTok{(}\FunctionTok{strsplit}\NormalTok{(}\StringTok{"QWERTYUIOPASDFGHJKLZXCVBNM "}\NormalTok{, }\AttributeTok{split =} \StringTok{""}\NormalTok{))}
+\CommentTok{\# print(allowed\_caracters)}
+\NormalTok{msg\_caracters }\OtherTok{\textless{}{-}}\FunctionTok{unlist}\NormalTok{(}\FunctionTok{strsplit}\NormalTok{(msg1, }\AttributeTok{split =} \StringTok{""}\NormalTok{))}
+\CommentTok{\# print(msg\_caracters)}
+
+\NormalTok{is\_valid }\OtherTok{\textless{}{-}} \FunctionTok{all}\NormalTok{(msg\_caracters }\SpecialCharTok{\%in\%}\NormalTok{ allowed\_caracters)}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The message contains only capital letters and whitespace:"}\NormalTok{, is\_valid, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The message contains only capital letters and whitespace: TRUE
+\end{verbatim}
+
 \subsection{Part B (8 marks)}\label{part-b-8-marks}
 
 Repeat the task in Question 1, Part B, but now using R.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{encoding\_message }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(message) \{}
+  
+  \CommentTok{\# Step 1}
+\NormalTok{  step1 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(letter) \{}
+    \ControlFlowTok{if}\NormalTok{ (letter }\SpecialCharTok{==} \StringTok{" "}\NormalTok{) }\FunctionTok{return}\NormalTok{(}\StringTok{" "}\NormalTok{)}
+\NormalTok{    new\_letter }\OtherTok{\textless{}{-}} \FunctionTok{intToUtf8}\NormalTok{((}\FunctionTok{utf8ToInt}\NormalTok{(letter) }\SpecialCharTok{{-}} \FunctionTok{utf8ToInt}\NormalTok{(}\StringTok{"A"}\NormalTok{) }\SpecialCharTok{+} \DecValTok{3}\NormalTok{) }\SpecialCharTok{\%\%} \DecValTok{26} \SpecialCharTok{+} \FunctionTok{utf8ToInt}\NormalTok{(}\StringTok{"A"}\NormalTok{))}
+    \FunctionTok{return}\NormalTok{(new\_letter)}
+\NormalTok{  \}}
+  
+  \CommentTok{\# Apply step1 to each character}
+\NormalTok{  shifted }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(message, step1)}
+  
+  \CommentTok{\#Step 2}
+\NormalTok{  reversed }\OtherTok{\textless{}{-}} \FunctionTok{rev}\NormalTok{(shifted)}
+  
+  \CommentTok{\#Step 3}
+\NormalTok{  replaced }\OtherTok{\textless{}{-}} \FunctionTok{gsub}\NormalTok{(}\StringTok{" "}\NormalTok{, }\StringTok{"*"}\NormalTok{, reversed)}
+  
+  \CommentTok{\#Step 4}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(replaced)) \{}
+    \ControlFlowTok{if}\NormalTok{ (i }\SpecialCharTok{\%\%} \DecValTok{2} \SpecialCharTok{==} \DecValTok{1}\NormalTok{) \{     }\CommentTok{\#This is left as one instead of 0 to match the zero{-}index of python}
+\NormalTok{      replaced[i] }\OtherTok{=} \FunctionTok{tolower}\NormalTok{(replaced[i])}
+\NormalTok{      \}}
+\NormalTok{    \}}
+  \CommentTok{\# Combine back into string}
+  
+\NormalTok{  encoded }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\StringTok{\textquotesingle{}"}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{\#}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{\#}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{\#\textquotesingle{}}\NormalTok{, }\FunctionTok{paste0}\NormalTok{(replaced, }\AttributeTok{collapse =} \StringTok{""}\NormalTok{), }\StringTok{\textquotesingle{}}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{\#}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{\#}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{\#"\textquotesingle{}}\NormalTok{)}
+  \FunctionTok{return}\NormalTok{(encoded)}
+\NormalTok{\}}
+
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{encoding\_message}\NormalTok{(msg\_caracters), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## "\#\#\#hPdQ*Bp*vL*GuRzVvDs*hKw\#\#\#"
+\end{verbatim}
 
 \subsection{Part C (2 marks)}\label{part-c-2-marks}
 
@@ -177,6 +233,19 @@ should return
 
 \texttt{The\ word\ index\ of\ the\ first\ occurrence\ of\ the\ keyword\ SPY\ is:\ 4.}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{split\_message }\OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(}\FunctionTok{strsplit}\NormalTok{(msg2, }\StringTok{" "}\NormalTok{))}
+\CommentTok{\#print(split\_message)}
+\NormalTok{first\_occurrence\_index }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}\FunctionTok{which}\NormalTok{(split\_message}\SpecialCharTok{==}\StringTok{"SPY"}\NormalTok{))}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The word index of the first occurrence of the keyword SPY is: "}\NormalTok{, first\_occurrence\_index, }\StringTok{"."}\NormalTok{, }\AttributeTok{sep =} \StringTok{""}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The word index of the first occurrence of the keyword SPY is: 4.
+\end{verbatim}
+
 \subsection{Part D (4 marks)}\label{part-d-4-marks}
 
 You have intercepted another encoded message string stored in
@@ -188,10 +257,35 @@ as follows:
 Count how often each letter \(A,B,..,Z\) appears in the message. Plot a
 bar chart of the letter frequencies.
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{caracters\_in\_message }\OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(}\FunctionTok{strsplit}\NormalTok{(msg3, }\AttributeTok{split =} \StringTok{""}\NormalTok{))}
+\NormalTok{caracter\_usage }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\FunctionTok{factor}\NormalTok{(caracters\_in\_message))}
+
+\FunctionTok{barplot}\NormalTok{(caracter\_usage, }
+        \AttributeTok{main =} \StringTok{"Caracter Usage in msg3"}\NormalTok{,}
+        \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{30}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{PDS_A1_Q2_week1_files/figure-latex/unnamed-chunk-5-1.pdf}}
+
 \subsubsection{Part D(ii) (2 marks)}\label{part-dii-2-marks}
 
 Compute the length of each word in the message. Plot a histogram of the
 word lengths.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{separeted\_words }\OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(}\FunctionTok{strsplit}\NormalTok{(msg3, }\AttributeTok{split =} \StringTok{"}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{*"}\NormalTok{))}
+\NormalTok{word\_lenghts }\OtherTok{\textless{}{-}} \FunctionTok{nchar}\NormalTok{(separeted\_words)}
+\FunctionTok{hist}\NormalTok{(word\_lenghts,}
+     \AttributeTok{main =} \StringTok{"Histogram of Word Lengths in msg3"}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{"Word Lenght"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{PDS_A1_Q2_week1_files/figure-latex/unnamed-chunk-6-1.pdf}}
 
 \subsection{Part E (3 marks)}\label{part-e-3-marks}
 
@@ -210,5 +304,40 @@ with the spy name. The spy name is generated as follows:
 \end{itemize}
 
 Print your spy name preceded by an informative print statement.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{first\_name }\OtherTok{\textless{}{-}} \StringTok{"Kutadgu"}
+\NormalTok{last\_name }\OtherTok{\textless{}{-}} \StringTok{"Demirci"}
+
+\NormalTok{spy\_name\_generator }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(first\_name\_v, last\_name\_v) \{}
+  
+\NormalTok{  first\_name\_v }\OtherTok{\textless{}{-}} \FunctionTok{toupper}\NormalTok{(first\_name\_v)}
+\NormalTok{  last\_name\_v }\OtherTok{\textless{}{-}} \FunctionTok{toupper}\NormalTok{(last\_name\_v)}
+  
+  
+\NormalTok{  fn\_part }\OtherTok{\textless{}{-}} \FunctionTok{substr}\NormalTok{(first\_name\_v, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{)}
+  
+  
+\NormalTok{  ln\_length }\OtherTok{\textless{}{-}} \FunctionTok{nchar}\NormalTok{(last\_name\_v)}
+\NormalTok{  ln\_part }\OtherTok{\textless{}{-}} \FunctionTok{substr}\NormalTok{(last\_name\_v, ln\_length}\DecValTok{{-}1}\NormalTok{, ln\_length)}
+  
+  
+\NormalTok{  random\_digits }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\FunctionTok{sample}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\DecValTok{9}\NormalTok{, }\DecValTok{2}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{), }\AttributeTok{collapse =} \StringTok{""}\NormalTok{)}
+  
+  \CommentTok{\# Combine all parts}
+\NormalTok{  spy\_name }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(fn\_part, ln\_part, random\_digits)}
+  
+  \FunctionTok{return}\NormalTok{(spy\_name)}
+\NormalTok{\}}
+
+\CommentTok{\# Generate a spy name}
+\FunctionTok{spy\_name\_generator}\NormalTok{(first\_name, last\_name)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "KUCI89"
+\end{verbatim}
 
 \end{document}
