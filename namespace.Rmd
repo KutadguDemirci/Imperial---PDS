@@ -1,0 +1,65 @@
+---
+title: "namespace"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+R has many packages available on the Comprehensive R Archive Network (CRAN). It is typically a two step process to obtain and then use a package. First the package is downloaded and installed locally from CRAN using the command `install.packages`, for example to add the visualisation package `ggplot2`, as we do next.
+
+```{r}
+install.packages("ggplot2") 
+```
+
+If an up-to-date version has already been installed, then nothing will be downloaded. Once installed the package can be *attached* by using the library command
+
+```{r}
+library(ggplot2)
+```
+
+After attaching, we can use functionality provided by the package, for example to create complex plots easily:
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl), shape = factor(gear))) +
+  geom_point(size = 3) + geom_smooth(method = "lm") 
+```
+
+(you do not need to know about the `ggplot2` package, this will appear again in later modules). We can remove the library without restarting R by the following command:
+
+```{r}
+detach("package:ggplot2", unload=TRUE)
+```
+
+Executing the same command from above yields now an error:
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl), shape = factor(gear))) + 
+  geom_point(size = 3) + geom_smooth(method = "lm")
+```
+
+Note that *detaching* does not uninstall the package, but only removes its functionality from the current environment.
+
+Generally, packages comprise of additional functionality that may include the same name. Namespaces are used to avoid ambiguity. When a function is invoked, R will search for that function name using the relevant namespace. Each package is added to a list. The stats package is included by default.
+
+```{r}
+# shows the list of attached packages
+search()
+```
+
+Attach now `ggplot2` and repeat the same command.
+
+```{r}
+library(ggplot2)
+search()
+```
+
+Simply entering a function name will display the R code associated with it.
+
+```{r}
+# for the Maximum Absolute Deviation
+mad
+```
+
+The last line of the displayed code reveals that the namespace of `mad` is `stats`, i.e. the package `stats` has a namespace which is the environment for the function `mad`. If a name is not found in the local environment, R will search for it by moving up through the parent environments until it is found. Otherwise an error will be triggered.

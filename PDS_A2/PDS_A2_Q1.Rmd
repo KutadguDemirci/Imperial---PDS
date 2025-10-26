@@ -1,0 +1,163 @@
+---
+title: \normalsize Assessment 1 \hfill MATH70094 Programming for Data Science \hfill Autumn 2025
+    \rule{\linewidth}{0.5mm}
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Enter NAME and CID here
+
+
+# Question 1 (24 marks)
+
+You are given data in the form of csv files on flights departing from New York City in 2013. There were obtained from the package `nycflights13` which can be installed running the following commands:
+
+```{r}
+install.packages("nycflights13") # run this only once
+```
+
+The airlines in these data need your help to improve their efficiency and find reasons for delays. The file `flights.csv` contains the data on the flights. The files `airlines.csv`, `airports.csv` and `planes.csv` contain additional information on the airlines, the airports and the airplane manufacturers. Your task is to load these data as dataframes and to explore them using basic R commands.  
+
+Some helpful methods for this question are:
+- `table`, `rownames`, `ifelse`, `apply`, `which.max`
+- `merge`, `aggregate`, `subset`
+
+## Code clarity (1 mark)
+
+There is a famous saying among software developers that code is read
+more often than it is written. Marks will be awarded (or not awarded)
+based on the clarity of the code and appropriate use of comments.
+
+## Part A 
+
+### Part A(i) (2 marks)
+
+Create dataframes named `flights`, `airlines`, `airports` and `planes` from the csv files. Print the first five rows of each dataframe. Make sure you check the description of the contents of each dataframe (no printout necessary) using e.g. `?nycflights::flights`. 
+
+```{r}
+
+```
+
+
+### Part A(ii) (1 mark)
+
+Find for each column in `flights` the number of missing entries.
+
+```{r}
+
+```
+
+### Part A(iii) (1 mark)
+
+Compute the average delay in minutes on your birthday (counting only those flights where the arrival delay is given).
+
+```{r}
+
+```
+
+
+## Part B
+
+### Part B(i) (3)
+
+In order to get to know the data better, combine the data contained in `flights`, `airlines` and `airports` using the `merge` command to create a new dataframe named `flights_airlines_airports`, which should have all the required information to answer the questions in parts B(ii) and B(iii) below.
+
+```{r}
+
+```
+
+### Part B(ii) (2 marks)
+
+Using the new data frame, find the number of unique airlines operating flights from New York City.
+
+```{r}
+
+```
+
+### Part B(iii) (1 mark)
+
+Using the new data frame, find the number of unique airlines operating flights to the airport `Los Angeles Intl`.
+
+```{r}
+
+```
+
+## Part C
+
+The airlines are competing and therefore want to compare their flight statistics. To support them, proceed with the following steps.
+
+### Part C(i) (3 marks)
+
+Create a dataframe `delay` that contains for each airline the average arrival delays and the median arrival delays, as well as the number of flights. Sort the dataframe by the average arrival delay in decreasing order. 
+
+```{r}
+
+```
+
+### C(ii) (1 mark)
+
+Use `delays` to answer two questions: (1) Which airline has the lowest mean arrival delay? (2) Which airline has the most flights?
+
+```{r}
+
+```
+
+### Part C(iii) (2 marks)
+
+Create two bar charts showing the average arrival delays and the median arrival delays by airline. How do you explain the difference?
+
+```{r}
+
+```
+
+### Part C(iv) (1 mark)
+
+For each carrier in `flights`, find the full name from `airports` of its busiest destination airport (with the most flights arriving of each specific carrier).
+
+```{r}
+
+```
+
+
+### Part D
+
+To every flight we can attach a travel efficiency score by computing $\text{efficiceny} = \frac{\text{scheduled travel duration}}{\text{actual travel duration}}$. Duration is measured in minutes. The higher this score, the more efficient the journey. Your task is to compare plane manufacturers for the 100 most and the 100 least efficient flights using the following steps.
+
+### Part D(i) (3 marks)
+
+Add two columns named `sched_dur` and `actual_dur` to `flights`, which contain for each flight the scheduled and actual travel duration (in minutes).
+
+```{r}
+
+```
+
+### Part D(ii) (1 mark)
+
+Add a column named `efficiency` to `flights` which computes the efficiency score as the ratio of `sched_dur` and `actual_dur`. 
+
+```{r}
+```
+
+### Part D(iii) (1 mark)
+
+Add a column named `manufacturer` to `flights` which contains the manufacturer of each plane. This information can be found in the dataframe `planes`. Remove all the flights from `flights` where no manufacturer can be identified.
+
+```{r}
+
+```
+
+### Part D(iv) (1 mark)
+
+Create a list of the manufacturers (if known) of the 100 most efficient flights (with the highest efficiency scores) and the 100 least efficient flights (with the lowest efficiency scores).
+
+```{r}
+
+```
