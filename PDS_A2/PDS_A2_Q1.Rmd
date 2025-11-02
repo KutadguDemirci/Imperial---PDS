@@ -13,7 +13,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Enter NAME and CID here
+## Kutadgu Gokalp Demirci - 06071571
 
 
 # Question 1 (24 marks)
@@ -43,7 +43,10 @@ based on the clarity of the code and appropriate use of comments.
 Create dataframes named `flights`, `airlines`, `airports` and `planes` from the csv files. Print the first five rows of each dataframe. Make sure you check the description of the contents of each dataframe (no printout necessary) using e.g. `?nycflights::flights`. 
 
 ```{r}
-
+flights <- data.frame(nycflights13::flights)
+airlines <- data.frame(nycflights13::airlines)
+planes <- data.frame(nycflights13::planes)
+airports <- data.frame(nycflights13::airports)
 ```
 
 
@@ -52,7 +55,7 @@ Create dataframes named `flights`, `airlines`, `airports` and `planes` from the 
 Find for each column in `flights` the number of missing entries.
 
 ```{r}
-
+colSums(is.na(flights))
 ```
 
 ### Part A(iii) (1 mark)
@@ -60,7 +63,9 @@ Find for each column in `flights` the number of missing entries.
 Compute the average delay in minutes on your birthday (counting only those flights where the arrival delay is given).
 
 ```{r}
+birthday_flights <- subset(flights, month==7 & day==15 & !is.na(arr_delay))
 
+avr_delay <- mean(birthday_flights$arr_delay)
 ```
 
 
@@ -71,7 +76,8 @@ Compute the average delay in minutes on your birthday (counting only those fligh
 In order to get to know the data better, combine the data contained in `flights`, `airlines` and `airports` using the `merge` command to create a new dataframe named `flights_airlines_airports`, which should have all the required information to answer the questions in parts B(ii) and B(iii) below.
 
 ```{r}
-
+flights_airlines <- merge(flights, airlines, by = "carrier")
+flights_airlines_airports <- merge(flights_airlines, airports,by.x = "dest", by.y = "faa")
 ```
 
 ### Part B(ii) (2 marks)
@@ -79,7 +85,8 @@ In order to get to know the data better, combine the data contained in `flights`
 Using the new data frame, find the number of unique airlines operating flights from New York City.
 
 ```{r}
-
+num_unique_airlines <- length(unique(flights_airlines_airports$name.x))
+print(num_unique_airlines)
 ```
 
 ### Part B(iii) (1 mark)
@@ -87,7 +94,9 @@ Using the new data frame, find the number of unique airlines operating flights f
 Using the new data frame, find the number of unique airlines operating flights to the airport `Los Angeles Intl`.
 
 ```{r}
-
+LAX_flights <- subset(flights_airlines_airports, name.y == "Los Angeles Intl")
+num_of_airlines_to_LA <- length(unique(LAX_flights$name.x))
+print(num_of_airlines_to_LA)
 ```
 
 ## Part C
@@ -99,6 +108,18 @@ The airlines are competing and therefore want to compare their flight statistics
 Create a dataframe `delay` that contains for each airline the average arrival delays and the median arrival delays, as well as the number of flights. Sort the dataframe by the average arrival delay in decreasing order. 
 
 ```{r}
+mean_delay <- aggregate(arr_delay ~ name.x, data = flights_airlines_airports, FUN = mean, na.rm = TRUE)
+names(mean_delay)[2] <- "mean_delay"
+
+median_delay <- aggregate(arr_delay ~ name.x, data = flights_airlines_airports, FUN = median, na.rm = TRUE)
+names(median_delay)[2] <- "median_delay"
+
+flight_count <- aggregate(arr_delay ~ name.x, data = flights_airlines_airports, FUN = length)
+names(flight_count)[2] <- "num_flights"
+
+delay <- merge(mean_delay, median_delay, by = "name.x")
+delay <- merge(delay, flight_count, by = "name.x")
+delay <- delay[order(-delay$mean_delay), ]
 
 ```
 
@@ -107,7 +128,15 @@ Create a dataframe `delay` that contains for each airline the average arrival de
 Use `delays` to answer two questions: (1) Which airline has the lowest mean arrival delay? (2) Which airline has the most flights?
 
 ```{r}
+lowest_mean <- which.min(delay$mean_delay)
+lowest_mean_airline <- delay[lowest_mean, ]
+cat('Airline with the lowest mean arrival delay is ')
+cat(lowest_mean_airline$name.x)
 
+most_flights <- which.max(delay$num_flights)
+most_flights_airline <- delay[most_flights, ]
+cat(' Airline with the most flights is ')
+cat(most_flights_airline$name.x)
 ```
 
 ### Part C(iii) (2 marks)
@@ -115,7 +144,22 @@ Use `delays` to answer two questions: (1) Which airline has the lowest mean arri
 Create two bar charts showing the average arrival delays and the median arrival delays by airline. How do you explain the difference?
 
 ```{r}
+barplot(
+  delay$mean_delay,
+  names.arg = delay$name.x,
+  las = 2,
+  main = "Average Arrival Delay by Airline",
+  ylab = "Average Delay"
+)
 
+# Bar chart for median arrival delays
+barplot(
+  delay$median_delay,
+  names.arg = delay$name.x,
+  las = 2,
+  main = "Median Arrival Delay by Airline",
+  ylab = "Median Delay"
+)
 ```
 
 ### Part C(iv) (1 mark)
@@ -123,7 +167,17 @@ Create two bar charts showing the average arrival delays and the median arrival 
 For each carrier in `flights`, find the full name from `airports` of its busiest destination airport (with the most flights arriving of each specific carrier).
 
 ```{r}
+carrier_dest_count <- as.data.frame(table(flights$carrier, flights$dest))
+names(carrier_dest_count) <- c("carrier", "dest", "num_flights")
 
+busiest_dest <- do.call(rbind, by(carrier_dest_count, carrier_dest_count$carrier, function(x)
+  x[which.max(x$num_flights), ]))
+busiest_dest_final <- merge(busiest_dest, airports[, c("faa", "name")],
+                           by.x = "dest", by.y = "faa", all.x = TRUE)
+busiest_dest_final <- busiest_dest_final[, c("carrier", "name", "num_flights")]
+names(busiest_dest_final) <- c("carrier", "busiest_dest_airport", "num_flights")
+
+busiest_dest_final
 ```
 
 
@@ -136,6 +190,18 @@ To every flight we can attach a travel efficiency score by computing $\text{effi
 Add two columns named `sched_dur` and `actual_dur` to `flights`, which contain for each flight the scheduled and actual travel duration (in minutes).
 
 ```{r}
+hhmm_to_minutes <- function(time) {
+  hour <- floor(time / 100)
+  minute <- time %% 100
+  total_minutes <- hour * 60 + minute
+  return(total_minutes)
+}
+
+flights$sched_dur <- hhmm_to_minutes(flights$sched_arr_time) - hhmm_to_minutes(flights$sched_dep_time)
+flights$actual_dur <- hhmm_to_minutes(flights$arr_time) - hhmm_to_minutes(flights$dep_time)
+
+#head(flights[, c("sched_dep_time", "sched_arr_time", "sched_dur",
+#                 "dep_time", "arr_time", "actual_dur")])
 
 ```
 
@@ -144,6 +210,8 @@ Add two columns named `sched_dur` and `actual_dur` to `flights`, which contain f
 Add a column named `efficiency` to `flights` which computes the efficiency score as the ratio of `sched_dur` and `actual_dur`. 
 
 ```{r}
+flights$efficiency <- flights$sched_dur / flights$actual_dur
+#head(flights[, c("sched_dur", "actual_dur", "efficiency")])
 ```
 
 ### Part D(iii) (1 mark)
@@ -151,7 +219,11 @@ Add a column named `efficiency` to `flights` which computes the efficiency score
 Add a column named `manufacturer` to `flights` which contains the manufacturer of each plane. This information can be found in the dataframe `planes`. Remove all the flights from `flights` where no manufacturer can be identified.
 
 ```{r}
-
+flights <- merge(
+  flights,
+  planes[, c("tailnum", "manufacturer")],
+  by = "tailnum",
+)
 ```
 
 ### Part D(iv) (1 mark)
@@ -159,5 +231,11 @@ Add a column named `manufacturer` to `flights` which contains the manufacturer o
 Create a list of the manufacturers (if known) of the 100 most efficient flights (with the highest efficiency scores) and the 100 least efficient flights (with the lowest efficiency scores).
 
 ```{r}
+flights_sorted <- flights[order(-flights$efficiency), ]
+top100_flights <- flights_sorted[1:100, ]
+top100_manufacturers <- top100_flights$manufacturer
+
+bottom100_flights <- flights_sorted[(nrow(flights_sorted)-99):nrow(flights_sorted), ]
+bottom100_manufacturers <- bottom100_flights$manufacturer
 
 ```
