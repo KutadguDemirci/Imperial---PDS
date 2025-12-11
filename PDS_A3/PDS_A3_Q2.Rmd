@@ -115,78 +115,71 @@ expected functionality. Do not provide implementations for the methods.
 
 ```{r}
 # write the interfaces here
-# Part A: Interfaces
 
-# TimeSeriesModel is an abstract class
+#Create TimeSeriesModel
 TimeSeriesModel <- function() {
-  # TimeSeriesModel is abstract so use a subclass
+  #TimeSeriesModel is abstract so use a subclass
   structure(list(), class = "TimeSeriesModel")
 }
 
-# Forecast method for TimeSeriesModel (empty)
+#Create empty forecast method for TimeSeriesModel
 forecast <- function(object, window_prediction_length, ...) {
   UseMethod("forecast")
 }
 
+#Forecast future values using window_prediction_length
 forecast.TimeSeriesModel <- function(object, window_prediction_length, ...) {
-  # Forecast future values of the time series for window_prediction_length steps
-  stop("Abstract method. Use a subclass.")
+  stop("not working yet")
 }
 
-# Plot forecast method for TimeSeriesModel (empty)
+#Create empty plot_forecast
 plot_forecast <- function(object, window_prediction_length, ...) {
   UseMethod("plot_forecast")
 }
 
 plot_forecast.TimeSeriesModel <- function(object, window_prediction_length, ...) {
-  # Plot the time series and the forecast for window_prediction_length steps
-  stop("Abstract method. Use a subclass.")
+  #Plot the data and forecast for given window_prediction_length
+  stop("not working yet")
 }
 
-# RollingMeanModel subclass
+#Create RollingMeanModel subclass
 RollingMeanModel <- function(time_series, window_train_length) {
-  # Create a RollingMeanModel object
-  # Args:
-  #   time_series: a ts object
-  #   window_train_length: integer for rolling mean window
   structure(list(
     time_series = time_series,
-    window_train_length = window_train_length
+    window_train_length = window_train_length,
+    window_mean = NA
   ), class = c("RollingMeanModel", "TimeSeriesModel"))
 }
 
-# Forecast method for RollingMeanModel (empty)
+#Create forecast method for RollingMeanModel
 forecast.RollingMeanModel <- function(object, window_prediction_length, ...) {
-  # Forecast using rolling mean - returns vector of predictions
-  stop("Not implemented yet.")
+  #Forecast using rolling mean - returns vector of predictions
+  return(NA)
 }
 
-# Plot forecast method for RollingMeanModel (empty)
+#Plot forecast method for RollingMeanModel
 plot_forecast.RollingMeanModel <- function(object, window_prediction_length, ...) {
-  # Plot time series with 5-step forecast
-  stop("Not implemented yet.")
+  return(NA)
 }
 
-# AR1Model subclass
+#Create AR1Model subclass
 AR1Model <- function(time_series) {
-  # Create an AR1Model object
-  # Args:
-  #   time_series: a ts object
   structure(list(
-    time_series = time_series
+    time_series = time_series,
+    phi_hat = NA,
+    last_value = NA
   ), class = c("AR1Model", "TimeSeriesModel"))
 }
 
-# Forecast method for AR1Model (empty)
+#Create forecast method for AR1Model (empty)
 forecast.AR1Model <- function(object, window_prediction_length, ...) {
   # Forecast using AR(1) model - returns vector of predictions
-  stop("Not implemented yet.")
+  return(NA)
 }
 
 # Plot forecast method for AR1Model (empty)
 plot_forecast.AR1Model <- function(object, window_prediction_length, ...) {
-  # Plot time series with 5-step forecast
-  stop("Not implemented yet.")
+  return(NA)
 }
 
 ```
@@ -213,29 +206,31 @@ RMarkdown cell to prevent failing tests from stopping code execution.
 ```{r, error=TRUE}
 library(testthat)
 
-# Create test time series
+# add your solution here
+
+#Create test time series
 test_ts <- ts(rep(1, 50))
 
-# Create model objects (will have minimal structure but no proper implementation)
 rolling_model <- RollingMeanModel(test_ts, 5)
 ar1_model <- AR1Model(test_ts)
 
-# Test 1: Check if models are constructed correctly
+#Create tests
 test_that("Models are constructed correctly", {
-  # These should fail because implementations are empty
-  expect_true("RollingMeanModel" %in% class(rolling_model))
-  expect_true("AR1Model" %in% class(ar1_model))
-  expect_equal(rolling_model$window_train_length, 5)
+
+  expect_equal(rolling_model$window_mean, 1)
+  expect_equal(ar1_model$phi_hat, 1)
+  expect_equal(as.numeric(ar1_model$last_value), 1)
 })
 
-# Test 2: Check if model predictions have correct length
+
 test_that("Model predictions have correct length", {
-  # These should fail because forecast methods aren't implemented
-  expect_length(forecast(rolling_model, 10), 10)
-  expect_length(forecast(ar1_model, 10), 10)
+  rolling_pred <- forecast(rolling_model, 10)
+  ar1_pred <- forecast(ar1_model, 10)
+  
+  expect_length(rolling_pred, 10)
+  expect_length(ar1_pred, 10)
 })
 
-# add your solution here
 ```
 
 ## Part C (10 marks)
@@ -245,16 +240,12 @@ from part B should now pass without errors or failures.
 
 ```{r}
 # add your solution here
-# Part C: Implementations
 
-# Update RollingMeanModel constructor
+#Fill in RollingMeanModel constructor
 RollingMeanModel <- function(time_series, window_train_length) {
   n <- length(time_series)
-  if (window_train_length > n) {
-    stop("window_train_length is larger than time series length")
-  }
   
-  # Calculate rolling mean from last window_train_length observations
+  #Calculate rolling mean from last window_train_length observations
   recent_values <- tail(time_series, window_train_length)
   window_mean <- mean(recent_values)
   
@@ -265,30 +256,11 @@ RollingMeanModel <- function(time_series, window_train_length) {
   ), class = c("RollingMeanModel", "TimeSeriesModel"))
 }
 
-# Implement forecast for RollingMeanModel
+#Fix forecast for RollingMeanModel
 forecast.RollingMeanModel <- function(object, window_prediction_length, ...) {
   rep(object$window_mean, window_prediction_length)
 }
 
-# Implement plot_forecast for RollingMeanModel
-plot_forecast.RollingMeanModel <- function(object, window_prediction_length, ...) {
-  # Use 5-step prediction as specified
-  pred_length <- 5
-  forecasts <- forecast(object, pred_length)
-  
-  # Combine original series with forecasts
-  full_series <- ts(c(object$time_series, forecasts), 
-                    start = start(object$time_series), 
-                    frequency = frequency(object$time_series))
-  
-  # Plot with different colors for actual vs forecast
-  plot.ts(full_series, main = "Rolling Mean Forecast")
-  n_actual <- length(object$time_series)
-  points(time(full_series)[(n_actual + 1):length(full_series)], 
-         forecasts, col = "red", pch = 16)
-  legend("topleft", legend = c("Actual", "Forecast"), 
-         col = c("black", "red"), pch = c(1, 16))
-}
 
 # Update AR1Model constructor
 AR1Model <- function(time_series) {
@@ -297,7 +269,7 @@ AR1Model <- function(time_series) {
     stop("Time series must have at least 2 observations for AR(1) estimation")
   }
   
-  # Estimate phi using the given formula
+  #Calculate phi in the formula
   y_lag <- time_series[1:(n-1)]
   y_current <- time_series[2:n]
   phi_hat <- sum(y_lag * y_current) / sum(y_lag^2)
@@ -321,27 +293,6 @@ forecast.AR1Model <- function(object, window_prediction_length, ...) {
   
   forecasts
 }
-
-# Implement plot_forecast for AR1Model
-plot_forecast.AR1Model <- function(object, window_prediction_length, ...) {
-  # Use 5-step prediction as specified
-  pred_length <- 5
-  forecasts <- forecast(object, pred_length)
-  
-  # Combine original series with forecasts
-  full_series <- ts(c(object$time_series, forecasts), 
-                    start = start(object$time_series), 
-                    frequency = frequency(object$time_series))
-  
-  # Plot with different colors for actual vs forecast
-  plot.ts(full_series, main = "AR(1) Forecast")
-  n_actual <- length(object$time_series)
-  points(time(full_series)[(n_actual + 1):length(full_series)], 
-         forecasts, col = "red", pch = 16)
-  legend("topleft", legend = c("Actual", "Forecast"), 
-         col = c("black", "red"), pch = c(1, 16))
-}
-
 ```
 
 ## Part D (12 marks)
@@ -363,42 +314,30 @@ method first). The test should pass.
 
 ```{r}
 # add your solution here
-# Part D(i): compare_models function
 
 compare_models <- function(train, test, window_train_length) {
-  # Create models
+  #Create models
   rolling_model <- RollingMeanModel(train, window_train_length)
   ar1_model <- AR1Model(train)
   
-  # Generate forecasts of same length as test data
-  n_test <- length(test)
-  rolling_forecast <- forecast(rolling_model, n_test)
-  ar1_forecast <- forecast(ar1_model, n_test)
+  #Generate forecasts
+  rolling_forecast <- forecast(rolling_model, length(test))
+  ar1_forecast <- forecast(ar1_model, length(test))
   
-  # Calculate mean squared errors
+  #Calculate MSEs and compare
   mse_rolling <- mean((test - rolling_forecast)^2)
   mse_ar1 <- mean((test - ar1_forecast)^2)
   
-  # Return TRUE if RollingMeanModel has smaller MSE
   return(mse_rolling < mse_ar1)
 }
 
-# Test for compare_models function
+#Test compare_models function
 test_that("compare_models works correctly", {
-  # Create simple test case
-  train_data <- ts(c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
-  test_data <- ts(c(1, 1, 1, 1, 1))
-  
-  # Both models should predict 1s, so MSE should be 0 for both
-  # Therefore compare_models should return FALSE (0 < 0 is FALSE)
+  # Simple test case
+  train_data <- ts(rep(1, 10))
+  test_data <- ts(rep(1, 5))
   result <- compare_models(train_data, test_data, 5)
-  expect_false(result)
-  
-  # Test with different data where rolling mean should be better
-  train_data2 <- ts(c(2, 2, 2, 2, 2, 2, 2, 2, 2, 2))
-  test_data2 <- ts(c(2, 2, 2, 2, 2))
-  result2 <- compare_models(train_data2, test_data2, 5)
-  expect_false(result2)  # Still equal MSEs
+  expect_false(result) 
 })
 
 ```
@@ -414,37 +353,21 @@ functions from Part D(i), which model (out of `RollingMeanModel` and
 
 ```{r}
 # add your solution here
-# Part D(ii): Apply to real data
 
 # Read the data from file
 time_series_data <- read.csv("time_series_data.csv")
 
-# Assuming the data has one column, convert to vector
-if (ncol(time_series_data) == 1) {
-  data_vector <- time_series_data[, 1]
-} else {
-  # If multiple columns, use the first column
-  data_vector <- time_series_data[, 1]
-}
-
-# Split into train (first 150) and test (remaining)
+# Convert to vector and split
+data_vector <- time_series_data[, 1]
 train <- ts(data_vector[1:150])
 test <- ts(data_vector[151:length(data_vector)])
 
-# Compare models
-rolling_better <- compare_models(train, test, window_train_length = 5)
+# Compare models and print result
+rolling_better <- compare_models(train, test, 5)
 
-# Print result
 if (rolling_better) {
-  print("RollingMeanModel performs better for this dataset")
+  print("RollingMeanModel performs better")
 } else {
-  print("AR1Model performs better for this dataset")
+  print("AR1Model performs better")
 }
-
-# Optional: Show some model details for insight
-rolling_model <- RollingMeanModel(train, 5)
-ar1_model <- AR1Model(train)
-
-cat("Rolling mean:", rolling_model$window_mean, "\n")
-cat("AR(1) phi estimate:", ar1_model$phi_hat, "\n")
 ```
