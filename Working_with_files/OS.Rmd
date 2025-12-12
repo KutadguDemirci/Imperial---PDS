@@ -1,0 +1,158 @@
+---
+title: "OS"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In the following code, we shall: \* Create two folders. \* Create files
+in one folder. \* Copy these files from one folder into another. \*
+Finally we want to validate that the copy has worked.
+
+For additional reference see
+<https://stat.ethz.ch/R-manual/R-patched/library/base/html/files.html>.
+
+# Creating
+
+We first set the working directory to our home folder. In a standard R
+script we could use `setwd("~/")`. In R Markdown we can use the
+following code block (starting with `r, setup`).
+
+```{r, setup, include=FALSE}
+require("knitr")
+opts_knit$set(root.dir = "~")
+getwd()
+```
+
+We begin by creating two new folders.
+
+```{r}
+dir.create("AUX1")
+dir.create("AUX2")
+```
+
+We can either create 100 files in the AUX1 directory manually.
+
+```{r}
+file.create("AUX1/test1.R")
+file.create("AUX1/test2.R")
+file.create("AUX1/test3.R")
+# etc.
+```
+
+Another way is to use a for-loop instead.
+
+```{r}
+for (i in 1:100){
+  file.create(paste0("AUX1/test",i,".R"))
+}
+```
+
+We can check if that worked by listing all the files in the AUX1 folder.
+
+```{r}
+list.files("AUX1")
+```
+
+Let us now copy the created files to AUX2. For a test, let us first copy
+only one file.
+
+```{r}
+source_folder = "AUX1" 
+target_folder =  "AUX2"
+file.copy(paste0(source_folder,"/test1.R"), target_folder)
+```
+
+Usually the folders contain many files, not only the ones we want to
+copy. Let us add a few images with extension png in the same folder. We
+create them as follows.
+
+```{r}
+for (i in 1:10){ file.create(paste0(source_folder,"/aux",i,".png")) }
+```
+
+We copy now only the .R files to AUX2. For this, we use a regular
+expression which picks out only file names ending with `.R`.
+
+```{r}
+list_of_R_files = list.files(source_folder, pattern = ".R$")
+list_of_R_files # sanity check
+```
+
+Let us now copy the files to the new folder.
+
+```{r}
+for (i in 1:length(list_of_R_files)){
+  file.copy(paste0(source_folder,"/",list_of_R_files[i]), target_folder) 
+}
+list.files("AUX2")
+```
+
+# Quiz Questions
+
+The answers are at the end of the file.
+
+1 - What is wrong with the following piece of code?
+
+path = \~/Desktop/MLDS/ setwd(path)
+
+A)  path is not a string
+B)  setwd() is not the function to set the working directory
+C)  need to replace setwd() by getwd()
+
+2 - Which of the following will list ONLY R files assuming "path" is a
+file directory?
+
+A)  list.files(path, pattern = ".png\$")
+B)  list.files(path)
+C)  list.files(path, pattern = ".R\$")
+
+# Renaming, removing
+
+We now rename the files in AUX2 to from `test` to `final`.
+
+```{r}
+for (i in 1:length(list_of_R_files)){
+  file.rename(paste0(target_folder,"/test",i,".R"), paste0(target_folder,"/final",i,".R")) 
+}
+```
+
+Next, we delete the R files (and only the R files) from AUX1.
+
+```{r}
+for (i in 1:100){ 
+  file.remove(paste0(source_folder,"/test",i,".R")) 
+}
+```
+
+We check if this worked by evaluating if there are any R files left in
+AUX1 named `test`.
+
+```{r}
+file.exists(paste0(source_folder,"/test",1:100,".R"))
+```
+
+# Answers to Quick Quiz Questions
+
+Q1 Answer: A Q2 Answer: C
+
+``` r
+{r}
+for (i in 1:lenght(AUX1)){ 
+  file.remove(paste0(source_folder,"/aux",i,".png")) 
+}
+```
+
+```{r}
+getwd()
+list.dirs()
+list.files('./AUX1')
+for (i in 1:10){
+  file.remove(paste0('./AUX1','/aux',i,'.png'))
+}
+```

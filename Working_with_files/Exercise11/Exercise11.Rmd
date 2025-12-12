@@ -1,0 +1,57 @@
+---
+title: "Exercise11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Create a new directory there called "Analysis".
+
+```{r}
+dir.create('Analysis')
+list.dirs()
+```
+
+2. Review the code in run_model.R. What does it do? What does this file need to run? Copy the file "run_model.R" to the new directory "Analysis" and delete the original. Be sure you have copied the file correctly before deleting.
+
+It loads an `R.data` file that should contain the `new_path` string (not defined anywhere else in the file). It then goes on to create a vector `y`, obtained by a matrix vector multiplication, and saves it to a csv file.
+
+Let's now copy the file and proceed as asked. 
+
+```{r}
+file.copy('./run_model.R','./Analysis/run_model.R')
+list.files('./Analysis')
+```
+
+3. Create a string `new_path` containing the absolute path to the Analysis directory (this will be used as an input for the run_model.R function). Use the `save` function to save `new_path` as the RData object `~/new_path.RData` to the root directory (check `?save` and `?load`).
+
+```{r}
+# Simple and direct if you know Analysis exists
+new_path <- normalizePath("Analysis")
+save(new_path, file = "~/new_path.RData")
+cat("Path saved:", new_path, "\n")
+list.dirs()
+list.files('./Analysis')
+```
+
+4. The function source() accepts a filename as an argument and runs the file. Source the R file `Analysis/run_model.R`, which will save some results to a file called "model_results.csv".
+
+```{r}
+load("~/new_path.RData")
+source(file.path(new_path, "run_model.R"))
+```
+
+5. Check if there are new .csv files inside the directory "Analysis".
+
+```{r}
+list.files('./Analysis')
+```
+
+6. Delete the object `~/new_path.RData` to clean up.
+
+```{r}
+file.remove('~/new_path.RData')
+```
+
