@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: MCMCSampling
+Version: 0.0.1
+Summary: Metropolis-Hastings MCMC sampling
+Author: KutadguDemirci
+Requires-Dist: numpy>=1.0
+Dynamic: author
+Dynamic: requires-dist
+Dynamic: summary

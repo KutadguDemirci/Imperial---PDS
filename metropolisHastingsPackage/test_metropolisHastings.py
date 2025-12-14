@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from metropolisHastings import MetropolisHastings
+from mcmcsampling.metropolisHastings import MetropolisHastings
 
 
 # Simple log_target function for testing
@@ -93,8 +93,9 @@ class TestMetropolisHastings(unittest.TestCase):
             initial_state=0.0,
             seed=123
         )
-
+        np.random.seed(123)
         samples1 = sampler1.sample(10)
+        np.random.seed(123)
         samples2 = sampler2.sample(10)
 
         np.testing.assert_allclose(samples1, samples2)
