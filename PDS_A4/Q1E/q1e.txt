@@ -1,0 +1,7 @@
+R in my opinion is a lot better in data manipulation, filtering and working with columnar data. Also getting data inside RStudio is incredibly straighforward.
+
+The data manipulation tools of R is a lot better than pandas. In pandas, having to use loc and iloc for data manipulation or filtering/slicing is very confusing to both write and make sense when something doesn't work as expected.
+
+Even though I am very used to Python and I feel friction when writing in R, the data manipulation tools of R were a lot easier to pick up compared to pandas.
+
+The examples are from a previous assigment, where after working through the Python part first, I was surprised how fast I could get through the R part. 
