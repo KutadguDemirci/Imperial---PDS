@@ -3,9 +3,7 @@ library(markovSim)
 
 
 
-# ---------------------------------------------------------------
-# Unit tests for the MarkovChain R6 class
-# ---------------------------------------------------------------
+# Unit tests for the MarkovChain class
 
 test_that("MarkovChain object is created correctly", {
   
@@ -34,7 +32,7 @@ test_that("simulate returns correct dimensions", {
   
   paths <- mc$simulate(n_steps = 10, n_paths = 5)
   
-  # 5 paths, 11 time points (including initial state)
+  
   expect_equal(dim(paths), c(5, 11))
   expect_true(all(paths %in% c(1, 2)))
 })
@@ -73,8 +71,8 @@ test_that("marginal_distribution sums to one", {
 test_that("empirical_marginal_distribution returns valid probabilities", {
   
   P <- matrix(c(
-    0.5, 0.5,
-    0.5, 0.5
+    0.9, 0.1,
+    0.3, 0.7
   ), nrow = 2, byrow = TRUE)
   
   mc <- MarkovChain$new(P, 1)

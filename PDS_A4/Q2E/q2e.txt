@@ -1,0 +1,7 @@
+I don't like the way that classes are created in R, I think Python handles that a lot better compared to R.
+
+Pyton has a single, clean way of creating classes and assigning private attributes, methods to the classes. Which, I think, makes OOP as simple as possible.
+
+However in R, even the existance of multiple ways of creating and therefore dealing with classes makes OOP even more confusing than it already is. Ontop of that, the way that attributes and methods are declared and assigned to a class is very confusing, I find that I need to go back and check documentation or find a similar example every time I want to create a class in R and work from that.
+
+In the py and R file, I did the implementation of the same class, and I think the difference is very clear.

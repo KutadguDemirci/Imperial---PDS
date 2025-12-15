@@ -1,25 +1,24 @@
 library(R6)
 library(igraph)
 
-# MarkovChain class ---------------------------------------------
+# MarkovChain class
 
 MarkovChain <- R6Class(
   "MarkovChain",
   
   public = list(
     
-    # -------- Fields --------
+    # Fields
     initial_state = NULL,
     P = NULL,
     K = NULL,
     
-    # -------- Initialize --------
-    #' Create a Markov chain object
+    # Initialize
     #' @param P Transition matrix
     #' @param initial_state Initial state index
     initialize = function(P, initial_state) {
       
-      # Defensive checks
+      # Checks
       if (!is.matrix(P)) {
         stop("P must be a matrix")
       }
@@ -38,20 +37,14 @@ MarkovChain <- R6Class(
       
       K <- nrow(P)
       
-      if (!is.numeric(initial_state) ||
-          length(initial_state) != 1 ||
-          initial_state < 1 ||
-          initial_state > K) {
-        stop("initial_state must be an integer between 1 and K")
-      }
+      
       
       self$P <- P
       self$initial_state <- initial_state
       self$K <- K
     },
     
-    # -------- Simulate paths --------
-    #' Simulate Markov chain paths
+    # Simulate paths 
     #' @param n_steps Number of steps
     #' @param n_paths Number of independent paths
     simulate = function(n_steps, n_paths) {
@@ -77,89 +70,66 @@ MarkovChain <- R6Class(
       return(paths)
     },
     
-    # -------- Marginal distribution --------
-    #' Marginal distribution at time t
+    # Marginal distribution
+    # Marginal distribution at time t
     #' @param t Time step
     marginal_distribution = function(t) {
       
-      if (t < 0) {
-        stop("t must be non-negative")
-      }
+      if (t < 0) {stop("t must be non-negative")}
       
       pi0 <- rep(0, self$K)
       pi0[self$initial_state] <- 1
       
       Pt <- self$P
-      if (t == 0) {
-        return(pi0)
+      if (t == 0) {return(pi0)
       }
       
-      for (i in 2:t) {
-        Pt <- Pt %*% self$P
-      }
+      for (i in 2:t) {Pt <- Pt %*% self$P}
       
-      as.numeric(pi0 %*% Pt)
-    },
+      as.numeric(pi0 %*% Pt)},
     
-    # -------- Empirical marginal distribution --------
-    #' Empirical distribution from simulated paths
+    # Empirical marginal distribution
+    #Empirical distribution from simulated paths
     #' @param paths Simulation output from simulate()
     empirical_marginal_distribution = function(paths) {
-      
-      if (!is.matrix(paths)) {
-        stop("paths must be a matrix")
-      }
+      if (!is.matrix(paths)) {stop("paths must be a matrix")}
       
       n_steps <- ncol(paths)
       emp <- matrix(0, nrow = n_steps, ncol = self$K)
       
-      for (t in 1:n_steps) {
-        tab <- table(factor(paths[, t], levels = 1:self$K))
+      for (t in 1:n_steps) {tab <- table(factor(paths[, t], levels = 1:self$K))
         emp[t, ] <- tab / nrow(paths)
       }
       
       return(emp)
     },
     
-    # -------- Stationary distribution --------
-    #' Estimate stationary distribution using power method
+    # Stationary distribution
     #' @param tol Convergence tolerance
     #' @param max_iter Maximum iterations
     stationary_distribution = function(tol = 1e-8, max_iter = 1000) {
-      
       pi <- rep(0, self$K)
       pi[self$initial_state] <- 1
       
-      for (i in 1:max_iter) {
-        pi_new <- as.numeric(pi %*% self$P)
+      for (i in 1:max_iter) {pi_new <- as.numeric(pi %*% self$P)
         
-        if (max(abs(pi_new - pi)) < tol) {
-          return(pi_new)
+        if (max(abs(pi_new - pi)) < tol) {return(pi_new)
         }
         
         pi <- pi_new
       }
-      
-      warning("Power method did not converge")
       return(pi)
     },
     
-    # -------- Visualisation --------
-    #' Visualise transition graph
+    # Visualisation
     visualise = function() {
-      
       g <- graph_from_adjacency_matrix(
         self$P,
         mode = "directed",
-        weighted = TRUE
-      )
+        weighted = TRUE)
       
-      plot(
-        g,
+      plot(g,
         edge.label = round(E(g)$weight, 2),
-        vertex.label = 1:self$K
-      )
-    }
-  )
-)
+        vertex.label = 1:self$K)
+      }))
 
